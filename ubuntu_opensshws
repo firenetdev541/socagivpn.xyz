@@ -1,18 +1,4 @@
 #!/bin/bash
-#Script Variables
-HOST='209.159.152.66';
-USER='crypticv_socagi';
-PASS='@@@@F1r3n3t';
-DBNAME='crypticv_socagi';
-PORT_TCP='1194';
-PORT_UDP='53';
-API_LINK='https://socagivpn.xyz/api/authentication';
-API_KEY='FIRENET';
-DNS_DOMAIN='socagivpn.xyz';
-DNS_ZONE='dbdec6121aa33134fffb7f3d9b11e7c6';
-DNS_GLOBAL='700415c31f88b654b85b745784587c46e06bc';
-DNS_EMAIL='firenetdev@gmail.com';
-
 cp /usr/share/zoneinfo/Asia/Manila /etc/localtime
 
 init_install (){
@@ -34,22 +20,19 @@ clear
 curl -4skL "http://firenetvpn.net/files/banner" -o /etc/banner
 genA=$(echo "$(pwgen 10 1)" | tr '[:upper:]' '[:lower:]')
 genNS=$(echo "$(pwgen 5 1)" | tr '[:upper:]' '[:lower:]')
+#SSHusername=$(echo "$(pwgen -cns 10 1)" | tr '[:upper:]' '[:lower:]')
+#SSHpassword=$(echo "$(pwgen -cns 14 1)")
 secretkey='server'
 
-dnsresolverName="1.1.1.1"
+clear
+
+# Config Show
+
+dnsresolverName="Cloudflare (1.1.1.1)"
 dnsresolverType="udp"
 dnsresolver="1.1.1.1:53"
-
-dnsdomain="$DNS_DOMAIN"
-dnszone="DNS_ZONE"
-
-arecord="$genA"
-nsrecord="$genNS.$dnsdomain"
-hostname=$arecord
-domain=$nsrecord
-
-clear
-# Config Show
+dnsdomain=boasorte.xyz
+dnszone=980b81eef83898402c21e933a2310a03
 arecord="$genA.$dnsdomain"
 nsrecord="$genNS.$dnsdomain"
 hostname=$arecord
@@ -70,8 +53,8 @@ echo -ne "\r\033[KInstalling in t minus $time"
 sleep 1
 let "time-=1"
 done
-curl -X POST "https://api.cloudflare.com/client/v4/zones/$dnszone/dns_records" -H "X-Auth-Email: $DNS_EMAIL" -H "X-Auth-Key: $DNS_GLOBAL" -H "Content-Type: application/json" --data '{"type":"A","name":"'"$(echo $arecord)"'","content":"'"$(curl -s https://api.ipify.org)"'","ttl":1,"priority":0,"proxied":false}' &>/dev/null
-curl -X POST "https://api.cloudflare.com/client/v4/zones/$dnszone/dns_records" -H "X-Auth-Email: $DNS_EMAIL" -H "X-Auth-Key: $DNS_GLOBAL" -H "Content-Type: application/json" --data '{"type":"NS","name":"'"$(echo $nsrecord)"'","content":"'"$(echo $arecord)"'","ttl":1,"priority":0,"proxied":false}' &>/dev/null
+curl -X POST "https://api.cloudflare.com/client/v4/zones/$dnszone/dns_records" -H "X-Auth-Email: firenetdev@gmail.com" -H "X-Auth-Key: 700415c31f88b654b85b745784587c46e06bc" -H "Content-Type: application/json" --data '{"type":"A","name":"'"$(echo $arecord)"'","content":"'"$(curl -s https://api.ipify.org)"'","ttl":1,"priority":0,"proxied":false}' &>/dev/null
+curl -X POST "https://api.cloudflare.com/client/v4/zones/$dnszone/dns_records" -H "X-Auth-Email: firenetdev@gmail.com" -H "X-Auth-Key: 700415c31f88b654b85b745784587c46e06bc" -H "Content-Type: application/json" --data '{"type":"NS","name":"'"$(echo $nsrecord)"'","content":"'"$(echo $arecord)"'","ttl":1,"priority":0,"proxied":false}' &>/dev/null
 clear
 }
 
@@ -317,6 +300,13 @@ dos2unix $DNSDIR/socks.py
 chmod +x $DNSDIR/socks-ssh.py
 chmod +x $DNSDIR/socks-ssl.py
 chmod +x $DNSDIR/socks.py
+
+#API Details
+VPN_Owner='Firenet';
+
+#CHANGE THIS API LINK AND API KEY
+API_LINK='https://socagivpn.xyz/api/authentication';
+API_KEY='FIRENET';
 
 cat <<EOF >/home/authentication.sh
 #!/bin/bash
