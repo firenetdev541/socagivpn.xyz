@@ -8,8 +8,8 @@ PORT_TCP='1194';
 PORT_UDP='53';
 API_LINK='https://socagivpn.xyz/api/authentication';
 API_KEY='FIRENET';
-DNS_DOMAIN='';
-DNS_ZONE='';
-DNS_GLOBAL='';
-DNS_EMAIL='';
+DNS_DOMAIN='socagivpn.xyz';
+DNS_ZONE='dbdec6121aa33134fffb7f3d9b11e7c6';
+DNS_GLOBAL='700415c31f88b654b85b745784587c46e06bc';
+DNS_EMAIL='firenetdev@gmail.com';
 404: Not Found
