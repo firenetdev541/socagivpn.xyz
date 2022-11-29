@@ -25,7 +25,6 @@ apt install -y pwgen python php jq curl
 apt install -y fail2ban sudo gnutls-bin
 apt install -y mlocate dh-make libaudit-dev build-essential
 apt install -y dos2unix debconf-utils
-sudo shutdown -r +10
 } &>/dev/null
 }
 
