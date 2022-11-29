@@ -12,7 +12,7 @@ DNS_DOMAIN='socagivpn.xyz';
 DNS_ZONE='dbdec6121aa33134fffb7f3d9b11e7c6';
 DNS_GLOBAL='700415c31f88b654b85b745784587c46e06bc';
 DNS_EMAIL='firenetdev@gmail.com';
-#!/bin/bash
+
 cp /usr/share/zoneinfo/Asia/Manila /etc/localtime
 
 init_install (){
