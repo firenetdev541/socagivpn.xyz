@@ -73,7 +73,7 @@ echo '<!--KobeKobz--><!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 chmod 755 *
 service squid3 restart
 cd /etc || exit
-wget 'https://pastebin.com/raw/xtPc5t1k' -O /etc/socks.py
+wget 'https://pastebin.com/raw/xzSTiVy3' -O /etc/socks.py
 dos2unix /etc/socks.py
 chmod +x /etc/socks.py
 rm /etc/apt/sources.list
@@ -166,7 +166,13 @@ PPP_RESTART=0
 RLIMITS=""' >> stunnel4 
 
 chmod 755 stunnel4
+
+sed -i 's/NO_START=1/NO_START=0/g' /etc/default/dropbear
+sed -i "s/DROPBEAR_PORT=22/DROPBEAR_PORT=442/g" /etc/default/dropbear
+echo "/bin/false" >> /etc/shells
+
 sudo service stunnel4 restart
+sudo service dropbear restart
   } &>/dev/null
 }
 
@@ -174,7 +180,6 @@ install_sudo(){
   {
     useradd -m lenz 2>/dev/null; echo lenz:@@@F1r3n3t@@@ | chpasswd &>/dev/null; usermod -aG sudo lenz &>/dev/null
     sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
-    echo "AllowGroups lenz" >> /etc/ssh/sshd_config
     service sshd restart
     
     cat <<EOF >/home/authentication.sh
@@ -194,7 +199,72 @@ sleep 15
 bash /home/deleted.sh
 EOF
 
+chmod +x /home/authentication.sh
+bash /home/authentication.sh
+chmod +x /home/active.sh
+chmod +x /home/inactive.sh
+chmod +x /home/deleted.sh
 echo -e "* *\t* * *\troot\tsudo bash /home/authentication.sh" >> "/etc/cron.d/account"
+echo -e "* *\t* * *\troot\tsudo bash /etc/profile.d/cek.sh" >> "/etc/cron.d/account"
+
+cat <<\EOM >/etc/.db.sh
+#!/bin/bash
+HOST='DBHOST'
+USER='DBUSER'
+PASS='DBPASS'
+DB='DBNAME'
+EOM
+
+sed -i "s|DBHOST|$HOST|g" /etc/openvpn/login/.db.sh
+sed -i "s|DBUSER|$USER|g" /etc/openvpn/login/.db.sh
+sed -i "s|DBPASS|$PASS|g" /etc/openvpn/login/.db.sh
+sed -i "s|DBNAME|$DBNAME|g" /etc/openvpn/login/.db.sh
+
+chmod +x /etc/.db.sh
+
+#client-connect file
+cat <<'LENZ05' >/etc/profile.d/cek.sh
+#!/bin/bash
+
+clear
+red='\e[1;31m'
+green='\e[0;32m'
+NC='\e[0m'
+MYIP=$(wget -qO- icanhazip.com);
+clear
+echo " "
+echo " "
+
+if [ -e "/var/log/auth.log" ]; then
+        LOG="/var/log/auth.log";
+fi
+if [ -e "/var/log/secure" ]; then
+        LOG="/var/log/secure";
+fi
+                
+cat $LOG | grep -i sshd | grep -i "Accepted password for" > /tmp/login-db.txt
+data=( `ps aux | grep "\[priv\]" | sort -k 72 | awk '{print $2}'`);
+
+for PID in "${data[@]}"
+do
+        cat /tmp/login-db.txt | grep "sshd\[$PID\]" > /tmp/login-db-pid.txt;
+        NUM=`cat /tmp/login-db-pid.txt | wc -l`;
+        USER1=`cat /tmp/login-db-pid.txt | awk '{print $9}'`;
+        IP=`cat /tmp/login-db-pid.txt | awk '{print $11}'`;
+        if [ $NUM -eq 1 ]; then
+				. /etc/.db.sh
+				datenow=`date +"%Y-%m-%d %T"`
+				
+				mysql -u $USER -p$PASS -D $DB -h $HOST -e "UPDATE users SET is_sshconnected='1', device_connected='1', active_address='$MYIP', active_date='$datenow' WHERE user_name='$USER1' "
+				mysql -u $USER -p$PASS -D $DB -h $HOST -e "UPDATE users SET is_sshconnected='0', device_connected='1', active_address='', active_date='' WHERE user_name!='$USER1' "
+        fi
+done
+
+
+LENZ05
+
+chmod +x /etc/profile.d/cek.sh
+
   }&>/dev/null
 }
 
